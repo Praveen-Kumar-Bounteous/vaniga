@@ -5,6 +5,7 @@ import Signup from '../Auth/pages/Signup';
 import Home from '../Pages/Home';
 import PrivateRoute from './PrivateRoute';
 import RoleBasedRoute from './RoleBasedRoute';
+import PLP from '@/Product/pages/PLP';
 
 const AppRoutes = () => {
     return (
@@ -14,6 +15,7 @@ const AppRoutes = () => {
             {/* Public Routes inside Layout */}
             <Route element={<RootLayout />}>
                 <Route path="/" element={<Home />} />
+                <Route path="/products" element={<PLP />} />
 
                 {/* Authenticated Routes (Any logged in user) */}
                 <Route element={<PrivateRoute />}>

@@ -1,12 +1,27 @@
 import apiClient from '../API/api-client';
 
-/**
- * Fetch all products with optional category filtering
- */
-export const fetchProductsAPI = ({ category, pageParam = 0 }: { category?: string, pageParam?: number }) => {
+interface FetchProductsParams {
+  category?: string;
+  pageParam?: number;
+  search?: string;
+}
+
+export const fetchProductsAPI = async ({ category, pageParam = 0, search }: FetchProductsParams) => {
   const limit = 8;
-  const url = `/products?skip=${pageParam}&limit=${limit}${category ? `&category=${category}` : ''}`;
-  return apiClient.get(url).then(res => res.data.data);
+  let url = `/products?skip=${pageParam}&limit=${limit}`;
+  
+  // URL Encode the category to handle special characters like '&'
+  if (category && category !== 'all') {
+    const encodedCategory = encodeURIComponent(category);
+    url += `&category=${encodedCategory}`;
+  }
+  
+  if (search) {
+    url += `&search=${encodeURIComponent(search)}`;
+  }
+
+  const response = await apiClient.get(url);
+  return response.data.data;
 };
 
 /**

@@ -28,19 +28,25 @@ export class ProductService {
 }
 
     // PUBLIC: Get all active products
-    static async getAll(category?: string, limit: number = 8, skip: number = 0) {
-        return prisma.product.findMany({
-            where: {
-                isActive: true,
-                ...(category && { category })
-            },
-            take: limit,
-            skip: skip,
-            include: { seller: { select: { name: true } } },
-            orderBy: { createdAt: 'desc' }
-        });
-    }
-
+static async getAll(category?: string, limit: number = 8, skip: number = 0, search?: string, minPrice?: number, maxPrice?: number) {
+    return prisma.product.findMany({
+        where: {
+            isActive: true,
+            ...(category && { category }),
+            ...(search && { name: { contains: search, mode: 'insensitive' } }),
+            ...( (minPrice || maxPrice) && {
+                price: {
+                    gte: minPrice || 0,
+                    lte: maxPrice || 9999999
+                }
+            })
+        },
+        take: limit,
+        skip: skip,
+        include: { seller: { select: { name: true } } },
+        orderBy: { createdAt: 'desc' }
+    });
+}
     // PUBLIC: Get single product
     static async getOne(id: string) {
         const product = await prisma.product.findUnique({ where: { id } });

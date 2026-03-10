@@ -64,7 +64,7 @@ const Header = () => {
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-2 cursor-pointer group">
             <img src="/logo.png" alt="Vaniga Logo" className="w-9 h-9 object-contain" />
-            <span className="text-2xl font-black text-primary tracking-tighter italic">
+            <span className="text-2xl font-black text-primary tracking-tighter">
               VANIGA
             </span>
           </Link>
