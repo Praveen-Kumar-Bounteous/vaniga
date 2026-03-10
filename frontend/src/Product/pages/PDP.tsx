@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react"; // Added useState and useEffect
 import { useQuery } from "@tanstack/react-query";
 import { fetchProductDetailsAPI } from "../product.apiService";
@@ -6,9 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Loader2, ShoppingCart, Zap, ShieldCheck, Truck, RotateCcw } from "lucide-react";
 import ProductCard from "../components/ProductCard";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addToCartAPI } from "../../Cart/cart.apiService";
+import { toast } from "sonner";
 
 export default function PDP() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [mainImage, setMainImage] = useState<string>(""); // State for image swap
 
   const { data, isLoading, error } = useQuery({
@@ -24,12 +29,27 @@ export default function PDP() {
     }
   }, [data, id]);
 
+    const cartMutation = useMutation({
+    mutationFn: () => addToCartAPI(id!, 1),
+    onSuccess: () => {
+      toast.success("Added to cart successfully!");
+      queryClient.invalidateQueries({ queryKey: ["cart"] }); // Update header count
+    },
+    onError: () => toast.error("Failed to add to cart. Please login."),
+  });
+
+  const handleBuyNow = () => {
+    navigate(`/checkout?productId=${id}`);
+  };
+
+
   if (isLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="animate-spin text-primary w-10 h-10" /></div>;
   if (error || !data) return <div className="p-20 text-center font-black italic text-red-500">PRODUCT NOT FOUND</div>;
 
   const { product, related } = data;
   const formatINR = (amount: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
   const oldPrice = product.price + (product.price * 0.25);
+
 
   return (
     <div className="min-h-screen bg-white font-sans pb-20">
@@ -48,27 +68,27 @@ export default function PDP() {
 
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          
+
           {/* 2. Left: Image Gallery */}
           <div className="space-y-4">
             <div className="aspect-square rounded-3xl overflow-hidden bg-slate-50 border border-slate-100">
-              <img 
-                src={mainImage || product.images[0]} 
-                alt={product.name} 
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" 
+              <img
+                src={mainImage || product.images[0]}
+                alt={product.name}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
             </div>
             {/* Thumbnails */}
             <div className="grid grid-cols-4 gap-4">
-               {product.images.map((img: string, i: number) => (
-                 <div 
-                   key={i} 
-                   onClick={() => setMainImage(img)} // Click to reflect in main image
-                   className={`aspect-square rounded-xl overflow-hidden border bg-slate-50 cursor-pointer transition-all ${mainImage === img ? 'border-primary ring-2 ring-primary/20' : 'hover:border-primary'}`}
-                 >
-                    <img src={img} className="w-full h-full object-cover" />
-                 </div>
-               ))}
+              {product.images.map((img: string, i: number) => (
+                <div
+                  key={i}
+                  onClick={() => setMainImage(img)} // Click to reflect in main image
+                  className={`aspect-square rounded-xl overflow-hidden border bg-slate-50 cursor-pointer transition-all ${mainImage === img ? 'border-primary ring-2 ring-primary/20' : 'hover:border-primary'}`}
+                >
+                  <img src={img} className="w-full h-full object-cover" />
+                </div>
+              ))}
             </div>
           </div>
 
@@ -96,28 +116,37 @@ export default function PDP() {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button className="flex-1 bg-primary hover:bg-purple-700 h-14 text-lg font-black italic uppercase rounded-2xl shadow-xl shadow-primary/20">
-                <ShoppingCart className="mr-2 w-5 h-5" /> Add to Cart
+              <Button
+                onClick={() => cartMutation.mutate()}
+                disabled={cartMutation.isPending}
+                className="flex-1 bg-primary hover:bg-purple-700 h-14 text-lg font-black italic uppercase rounded-2xl shadow-xl shadow-primary/20"
+              >
+                {cartMutation.isPending ? <Loader2 className="animate-spin" /> : <><ShoppingCart className="mr-2 w-5 h-5" /> Add to Cart</>}
               </Button>
-              <Button variant="outline" className="flex-1 border-primary text-primary hover:bg-primary hover:text-white h-14 text-lg font-black italic uppercase rounded-2xl">
+
+              <Button
+                onClick={handleBuyNow}
+                variant="outline"
+                className="flex-1 border-primary text-primary hover:bg-primary hover:text-white h-14 text-lg font-black italic uppercase rounded-2xl"
+              >
                 <Zap className="mr-2 w-5 h-5" /> Buy Now
               </Button>
             </div>
 
             {/* Trust Badges */}
             <div className="grid grid-cols-3 gap-4 pt-8 border-t border-slate-100">
-               <div className="flex flex-col items-center text-center gap-2">
-                 <Truck className="text-primary w-5 h-5" />
-                 <span className="text-[10px] font-bold uppercase text-slate-500">Fast Delivery</span>
-               </div>
-               <div className="flex flex-col items-center text-center gap-2">
-                 <ShieldCheck className="text-primary w-5 h-5" />
-                 <span className="text-[10px] font-bold uppercase text-slate-500">Secure Warranty</span>
-               </div>
-               <div className="flex flex-col items-center text-center gap-2">
-                 <RotateCcw className="text-primary w-5 h-5" />
-                 <span className="text-[10px] font-bold uppercase text-slate-500">7 Days Return</span>
-               </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <Truck className="text-primary w-5 h-5" />
+                <span className="text-[10px] font-bold uppercase text-slate-500">Fast Delivery</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <ShieldCheck className="text-primary w-5 h-5" />
+                <span className="text-[10px] font-bold uppercase text-slate-500">Secure Warranty</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <RotateCcw className="text-primary w-5 h-5" />
+                <span className="text-[10px] font-bold uppercase text-slate-500">7 Days Return</span>
+              </div>
             </div>
           </div>
         </div>

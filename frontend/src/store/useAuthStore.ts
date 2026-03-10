@@ -1,20 +1,25 @@
 import { create } from 'zustand';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface AuthState {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: any | null;
+  setUser: (user: any) => void;
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  setUser: (user) => set({ user }),
-  logout: () => set({ user: null }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      setUser: (user) => set({ user }),
+      logout: () => {
+        set({ user: null });
+        localStorage.removeItem('vaniga-auth'); // Clear on logout
+      },
+    }),
+    {
+      name: 'vaniga-auth', // Key in localStorage
+      storage: createJSONStorage(() => localStorage),
+    }
+  )
+);
