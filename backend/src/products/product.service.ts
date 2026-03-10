@@ -49,11 +49,27 @@ static async getAll(category?: string, limit: number = 8, skip: number = 0, sear
 }
     // PUBLIC: Get single product
     static async getOne(id: string) {
-        const product = await prisma.product.findUnique({ where: { id } });
+        const product = await prisma.product.findUnique({ 
+            where: { id },
+            include: { seller: { select: { name: true } } }
+        });
         if (!product || !product.isActive) throw new Error('Product not found');
         return product;
     }
 
+    // Get Related Products (Same category, limited to 4, excluding current)
+    static async getRelated(category: string, excludeId: string) {
+        return prisma.product.findMany({
+            where: {
+                category,
+                id: { not: excludeId },
+                isActive: true
+            },
+            take: 4,
+            orderBy: { createdAt: 'desc' }
+        });
+    }
+    
     // SELLER ONLY: Create
     static async create(data: any, sellerId: string) {
         return prisma.product.create({

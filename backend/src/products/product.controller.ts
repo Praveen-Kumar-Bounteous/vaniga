@@ -67,3 +67,18 @@ export const deleteProduct = async (req: Request, res: Response) => {
         res.status(403).json({ message: error.message });
     }
 };
+
+export const getProductById = async (req: Request, res: Response) => {
+    try {
+        const productID = req.params.id as string;
+        const product = await ProductService.getOne(productID);
+        const related = await ProductService.getRelated(product.category, product.id);
+        
+        res.json({ 
+            success: true, 
+            data: { product, related } 
+        });
+    } catch (error: any) {
+        res.status(404).json({ success: false, message: error.message });
+    }
+};  

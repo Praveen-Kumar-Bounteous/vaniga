@@ -32,10 +32,11 @@ export const fetchCategoriesAPI = () => {
 };
 
 /**
- * Fetch a single product detail by ID
+ * Fetch a single product detail by ID and also related prodict
  */
-export const fetchProductByIdAPI = (id: string) => {
-  return apiClient.get(`/products/${id}`);
+export const fetchProductDetailsAPI = async (id: string) => {
+  const response = await apiClient.get(`/products/${id}`);
+  return response.data.data; // Returns { product, related }
 };
 
 /**

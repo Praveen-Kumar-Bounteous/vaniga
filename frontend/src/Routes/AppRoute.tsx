@@ -6,6 +6,7 @@ import Home from '../Pages/Home';
 import PrivateRoute from './PrivateRoute';
 import RoleBasedRoute from './RoleBasedRoute';
 import PLP from '@/Product/pages/PLP';
+import PDP from '@/Product/pages/PDP';
 
 const AppRoutes = () => {
     return (
@@ -16,6 +17,7 @@ const AppRoutes = () => {
             <Route element={<RootLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/products" element={<PLP />} />
+                <Route path="/products/:id" element={<PDP />} />
 
                 {/* Authenticated Routes (Any logged in user) */}
                 <Route element={<PrivateRoute />}>

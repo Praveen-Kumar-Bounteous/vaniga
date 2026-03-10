@@ -8,6 +8,7 @@ const productRoutes = Router();
 // PUBLIC ROUTES
 productRoutes.get('/categories', productController.getCategories); 
 productRoutes.get('/', productController.getProducts);
+productRoutes.get('/:id', productController.getProductById);
 
 // PROTECTED ROUTES
 productRoutes.post('/', 
