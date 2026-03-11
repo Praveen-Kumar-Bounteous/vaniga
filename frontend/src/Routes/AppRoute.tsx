@@ -1,10 +1,4 @@
 import { Routes, Route } from 'react-router-dom';
-import RootLayout from '../Layout/RootLayout';
-import Login from '../Auth/pages/Login';
-import Signup from '../Auth/pages/Signup';
-import Home from '../Pages/Home';
-import PrivateRoute from './PrivateRoute';
-import RoleBasedRoute from './RoleBasedRoute';
 import PLP from '@/Product/pages/PLP';
 import PDP from '@/Product/pages/PDP';
 import CartPage from '@/Cart/pages/CartPage';
@@ -12,6 +6,13 @@ import CheckoutPage from '@/Cart/pages/CheckoutPage';
 import OrderSuccess from '@/Order/pages/OrderSuccess';
 import OrderDetails from '@/Order/pages/OrderDetails';
 import OrderHistory from '@/Order/pages/OrderHistory';
+import ProfilePage from '@/User/pages/ProfilePage';
+import Login from '@/Auth/pages/Login';
+import Signup from '@/Auth/pages/Signup';
+import RootLayout from '@/Layout/RootLayout';
+import Home from '@/Pages/Home';
+import PrivateRoute from './PrivateRoute';
+import RoleBasedRoute from './RoleBasedRoute';
 
 const AppRoutes = () => {
     return (
@@ -26,13 +27,12 @@ const AppRoutes = () => {
 
                 {/* Authenticated Routes (Any logged in user) */}
                 <Route element={<PrivateRoute />}>
-                    <Route path="/profile" element={<div className="p-10">User Profile Page</div>} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/order-success" element={<OrderSuccess />} />
                     <Route path="/order-history" element={<OrderHistory />} />
                     <Route path="/order-details/:id" element={<OrderDetails />} />
-                    {/* <Route path="/profile" element={<ProfilePage />} /> */}
+                    <Route path="/profile" element={<ProfilePage />} />
                 </Route>
 
                 {/* Seller Only Routes */}

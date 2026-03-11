@@ -6,6 +6,7 @@ import productRoutes from './products/product.routes.js';
 import cartRoutes from './cart/cart.routes.js';
 import orderRoutes from './order/order.routes.js';
 import promoRoutes from './promo/promo.routes.js';
+import userRoutes from './user/user.routes.js';
 
 const app = express();
 
@@ -21,5 +22,6 @@ app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/promo', promoRoutes);
+app.use('/api/v1/users', userRoutes);
 
 export default app;
