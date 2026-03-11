@@ -4,6 +4,8 @@ import cors from 'cors';
 import authRoutes from './auth/auth.routes.js';
 import productRoutes from './products/product.routes.js';
 import cartRoutes from './cart/cart.routes.js';
+import orderRoutes from './order/order.routes.js';
+import promoRoutes from './promo/promo.routes.js';
 
 const app = express();
 
@@ -17,5 +19,7 @@ app.use(cors({
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/cart', cartRoutes);
+app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/promo', promoRoutes);
 
 export default app;

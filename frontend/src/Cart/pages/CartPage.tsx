@@ -41,10 +41,14 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-4">
             {cart.items.map((item: any) => (
-              <CartItem key={item.id} item={item} onUpdate={(id: any, q: any) => updateMut.mutate({id, q})} onRemove={(id: any) => removeMut.mutate(id)} />
+              <CartItem key={item.id} item={item} onUpdate={(id: any, q: any) => updateMut.mutate({ id, q })} onRemove={(id: any) => removeMut.mutate(id)} />
             ))}
           </div>
-          <SummaryCard subtotal={subtotal} onCheckout={() => navigate('/checkout')} />
+          <SummaryCard
+            subtotal={subtotal}
+            showCoupon={false}
+            onCheckout={() => navigate('/checkout')}
+          />
         </div>
       </div>
     </div>

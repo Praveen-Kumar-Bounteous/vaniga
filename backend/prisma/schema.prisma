@@ -103,8 +103,10 @@ model Order {
   totalAmount     Float
   status          OrderStatus @default(PENDING)
   
-  paymentId       String?
+  paymentId       String?     @unique
   paymentStatus   String      @default("unpaid")
+
+  customMessage   String?     @db.Text
   
   // Storing shipping address as a snapshot (JSONB) so it doesn't change if user updates profile
   shippingAddress Json        
@@ -114,7 +116,7 @@ model Order {
 
 model OrderItem {
   id        String  @id @default(uuid())
-  orderId   String
+  orderId   String  @unique
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId String
   product   Product @relation(fields: [productId], references: [id])
