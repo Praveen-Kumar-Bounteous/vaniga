@@ -3,14 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { logoutAPI } from '../Auth/auth.apiService';
 import { Button } from '@/components/ui/button';
-import { 
-  ShoppingCart, 
-  User, 
-  LogOut, 
-  Menu, 
-  Loader2, 
-  UserCircle, 
-  LayoutDashboard 
+import {
+  ShoppingCart,
+  User,
+  LogOut,
+  Menu,
+  Loader2,
+  UserCircle,
+  LayoutDashboard
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -21,11 +21,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useQuery } from '@tanstack/react-query';
+import { fetchCartAPI } from '@/Cart/cart.apiService';
 
 const Header = () => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const { data: cart } = useQuery({
+    queryKey: ["cart"],
+    queryFn: fetchCartAPI,
+  });
+
+  const cartCount =
+    cart?.items?.reduce((acc: number, item: any) => acc + item.quantity, 0) ?? 0;
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -60,7 +70,7 @@ const Header = () => {
 
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          
+
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-2 cursor-pointer group">
             <img src="/logo.png" alt="Vaniga Logo" className="w-9 h-9 object-contain" />
@@ -85,10 +95,12 @@ const Header = () => {
           <div className="flex items-center gap-2 md:gap-3">
             <Link to="/cart" className="cursor-pointer">
               <Button variant="ghost" size="icon" className="relative hover:bg-purple-50 transition-colors">
-                <ShoppingCart className="w-5 h-5 text-slate-700" />
-                <span className="absolute top-1 right-1 bg-primary text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-bold border-2 border-white">
-                  0
-                </span>
+                <ShoppingCart className="w-8 h-8 text-slate-700" />
+                {cartCount > 0 && (
+                  <span className="absolute top-1 right-1 bg-primary text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-bold border-2 border-white">
+                    {cartCount}
+                  </span>
+                )}
               </Button>
             </Link>
 
@@ -107,16 +119,16 @@ const Header = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => navigate('/profile')} 
+                  <DropdownMenuItem
+                    onClick={() => navigate('/profile')}
                     className="flex items-center gap-2 p-3 cursor-pointer rounded-lg hover:bg-purple-50 focus:bg-purple-50 focus:text-primary"
                   >
                     <UserCircle className="w-4 h-4" />
                     <span className="font-medium">View Profile</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={handleLogout} 
+                  <DropdownMenuItem
+                    onClick={handleLogout}
                     className="flex items-center gap-2 p-3 cursor-pointer rounded-lg text-red-500 hover:bg-red-50 focus:bg-red-50 focus:text-red-600 font-semibold"
                   >
                     <LogOut className="w-4 h-4" />
