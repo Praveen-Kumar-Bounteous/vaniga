@@ -12,7 +12,7 @@ export class ProductService {
 
     // 2. For each category, get one sample image
     const categoryData = await Promise.all(
-        categories.map(async (cat) => {
+        categories.map(async (cat: any) => {
             const product = await prisma.product.findFirst({
                 where: { category: cat.category, isActive: true },
                 select: { images: true }

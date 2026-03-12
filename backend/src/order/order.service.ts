@@ -2,6 +2,15 @@ import { prisma } from '../lib/prisma.js';
 import axios from 'axios';
 import { sendOrderConfirmation } from '../utils/mailer.js';
 
+export type CartItem = {
+  productId: string
+  quantity: number
+  product: {
+    name: string
+    price: number
+  }
+}
+
 export class OrderService {
   
   static async initiatePayment(userId: string, totalAmount: number, email: string, phone: string, name: string) {
@@ -56,7 +65,7 @@ export class OrderService {
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
       // 3. Double-check inside transaction (Serializable-safe)
       const duplicateCheck = await tx.order.findUnique({
         where: { paymentId: cashfreeOrderId }
@@ -77,14 +86,14 @@ export class OrderService {
           include: { items: { include: { product: true } } } 
         });
         if (!cart || cart.items.length === 0) throw new Error("Cart empty");
-        
-        itemsToOrder = cart.items.map(i => ({
+  
+        itemsToOrder = cart.items.map((i: CartItem) => ({
           productId: i.productId,
           name: i.product.name,
           price: i.product.price,
           quantity: i.quantity
         }));
-        subtotal = cart.items.reduce((acc, i) => acc + (i.product.price * i.quantity), 0);
+        subtotal = cart.items.reduce((acc: any, i:any) => acc + (i.product.price * i.quantity), 0);
         await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
       }
 
