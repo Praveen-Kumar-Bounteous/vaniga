@@ -5,7 +5,7 @@ const ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_SECRET || 'access_secret';
 const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh_secret';
 
 export const generateTokens = (userId: string, role: string) => {
-  const accessToken = jwt.sign({ userId, role }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+  const accessToken = jwt.sign({ userId, role }, ACCESS_TOKEN_SECRET, { expiresIn: '1h' }); // Increased for stability
   const refreshToken = jwt.sign({ userId }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
   return { accessToken, refreshToken };
 };
@@ -14,14 +14,17 @@ export const setAuthCookies = (res: Response, accessToken: string, refreshToken:
   const isProduction = process.env.NODE_ENV === 'production';
 
   const cookieOptions = {
-    httpOnly: true, // Prevents XSS
-    secure: isProduction, // Only sent over HTTPS in production
-    sameSite: 'lax' as const, // Prevents CSRF
+    httpOnly: true,
+    // CRITICAL FOR DEPLOYMENT:
+    // 1. Secure must be true for sameSite: 'none'
+    // 2. sameSite: 'none' allows cookies across different domains (Vercel to Render)
+    secure: isProduction ? true : false, 
+    sameSite: isProduction ? 'none' as const : 'lax' as const,
   };
 
   res.cookie('accessToken', accessToken, { 
     ...cookieOptions, 
-    maxAge: 15 * 60 * 1000 // 15 mins
+    maxAge: 60 * 60 * 1000 // 1 hour
   });
 
   res.cookie('refreshToken', refreshToken, { 
@@ -31,13 +34,22 @@ export const setAuthCookies = (res: Response, accessToken: string, refreshToken:
 };
 
 export const clearAuthCookies = (res: Response) => {
-  res.clearCookie('accessToken');
-  res.clearCookie('refreshToken');
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.clearCookie('accessToken', {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+  });
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+  });
 };
 
 export const verifyRefreshToken = (token: string) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET || 'refresh_secret') as { userId: string };
+    const decoded = jwt.verify(token, REFRESH_TOKEN_SECRET) as { userId: string };
     return decoded;
   } catch (error) {
     return null;
