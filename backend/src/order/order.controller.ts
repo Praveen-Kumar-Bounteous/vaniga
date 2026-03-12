@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import axios from 'axios';
 import { OrderService } from './order.service.js';
 
 export const initiatePayment = async (req: Request, res: Response) => {
