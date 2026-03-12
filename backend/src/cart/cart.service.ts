@@ -25,7 +25,7 @@ export class CartService {
   // Add/Update Item
   static async addItem(userId: string, productId: string, quantity: number) {
     const cart = await this.getCart(userId);
-    const existingItem = cart.items.find(i => i.productId === productId);
+    const existingItem = cart.items.find((i: any) => i.productId === productId);
 
     if (existingItem) {
       return prisma.cartItem.update({
