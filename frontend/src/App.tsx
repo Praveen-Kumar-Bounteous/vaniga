@@ -1,11 +1,13 @@
-import { Button } from "./components/ui/button"
+import { Toaster } from "sonner";
+import AppRoutes from "./Routes/AppRoute";
 
-const App = () => {
+function App() {
   return (
     <div>
-      <Button>Click Me</Button>
+      <Toaster position="top-right" richColors closeButton />
+      <AppRoutes />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
