@@ -119,7 +119,7 @@ export default function PDP() {
               <Button
                 onClick={() => cartMutation.mutate()}
                 disabled={cartMutation.isPending}
-                className="flex-1 bg-primary hover:bg-purple-700 h-14 text-lg font-black italic uppercase rounded-2xl shadow-xl shadow-primary/20"
+                className="cursor-pointer flex-1 bg-primary hover:bg-purple-700 h-14 text-lg font-black italic uppercase rounded-2xl shadow-xl shadow-primary/20"
               >
                 {cartMutation.isPending ? <Loader2 className="animate-spin" /> : <><ShoppingCart className="mr-2 w-5 h-5" /> Add to Cart</>}
               </Button>
@@ -127,7 +127,7 @@ export default function PDP() {
               <Button
                 onClick={handleBuyNow}
                 variant="outline"
-                className="flex-1 border-primary text-primary hover:bg-primary hover:text-white h-14 text-lg font-black italic uppercase rounded-2xl"
+                className="cursor-pointer flex-1 border-primary text-primary hover:bg-primary hover:text-white h-14 text-lg font-black italic uppercase rounded-2xl"
               >
                 <Zap className="mr-2 w-5 h-5" /> Buy Now
               </Button>

@@ -12,10 +12,11 @@ export const getCategories = async (_req: Request, res: Response) => {
 
 export const getProducts = async (req: Request, res: Response) => {
     const category = req.query.category as string;
+    const search = req.query.search as string;
     const limit = parseInt(req.query.limit as string) || 8;
     const skip = parseInt(req.query.skip as string) || 0;
 
-    const products = await ProductService.getAll(category, limit, skip);
+    const products = await ProductService.getAll(category, limit, skip, search);
     res.json({ success: true, data: products });
 };
 
