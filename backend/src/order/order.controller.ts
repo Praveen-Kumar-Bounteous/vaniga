@@ -3,14 +3,17 @@ import { OrderService } from './order.service.js';
 
 export const initiatePayment = async (req: Request, res: Response) => {
   try {
-    const { totalAmount, userId, email, phone, name } = req.body;
+    const userId = (req as any).user.userId;
+    const { totalAmount, email, phone, name, address, productId, couponCode, discountAmount } = req.body;
 
-    if (!email || !phone || !totalAmount) {
-      return res.status(400).json({ success: false, message: "Missing required details" });
+    if (!email || !phone || !totalAmount || !address) {
+      return res.status(400).json({ success: false, message: "Missing required details (Email, Phone, and Address are required)" });
     }
 
-    // Call the Service instead of re-writing axios code here
-    const data = await OrderService.initiatePayment(userId, totalAmount, email, phone, name);
+    // Now passes full data to create the PENDING order record first
+    const data = await OrderService.initiatePayment(userId, {
+      totalAmount, email, phone, name, address, productId, couponCode, discountAmount
+    });
     
     res.json({ success: true, ...data });
   } catch (error: any) {
@@ -18,13 +21,11 @@ export const initiatePayment = async (req: Request, res: Response) => {
   }
 };
 
-
 export const confirmOrder = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.userId;
-
-    // req.body contains { address, productId, cashfreeOrderId, couponCode, discountAmount }
-    const order = await OrderService.finalizeOrder(userId, req.body);
+    // req.body only needs { cashfreeOrderId } now
+    const order = await OrderService.finalizeOrder(userId, req.body.cashfreeOrderId);
     
     res.json({ success: true, data: order });
   } catch (error: any) {

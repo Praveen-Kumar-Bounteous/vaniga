@@ -2,25 +2,55 @@ import { prisma } from '../lib/prisma.js';
 import axios from 'axios';
 import { sendOrderConfirmation } from '../utils/mailer.js';
 
-export type CartItem = {
-  productId: string
-  quantity: number
-  product: {
-    name: string
-    price: number
-  }
-}
-
 export class OrderService {
-
-  static async initiatePayment(userId: string, totalAmount: number, email: string, phone: string, name: string) {
-    const orderId = `order_${Date.now()}`;
+  static async initiatePayment(userId: string, orderData: any) {
+    const { totalAmount, email, phone, name, address, productId, couponCode, discountAmount } = orderData;
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 
+    // 1. Create the Order in DB with 'pending' status BEFORE payment
+    const order = await prisma.$transaction(async (tx: any) => {
+      let itemsToOrder = [];
+      let subtotal = 0;
+
+      if (productId) {
+        const p = await tx.product.findUnique({ where: { id: productId } });
+        if (!p) throw new Error("Product not found");
+        itemsToOrder.push({ productId: p.id, name: p.name, price: p.price, quantity: 1 });
+        subtotal = p.price;
+      } else {
+        const cart = await tx.cart.findUnique({
+          where: { userId },
+          include: { items: { include: { product: true } } }
+        });
+        if (!cart || cart.items.length === 0) throw new Error("Cart empty");
+        itemsToOrder = cart.items.map((i: any) => ({
+          productId: i.productId,
+          name: i.product.name,
+          price: i.product.price,
+          quantity: i.quantity
+        }));
+        subtotal = cart.items.reduce((acc: any, i: any) => acc + (i.product.price * i.quantity), 0);
+      }
+
+      return await tx.order.create({
+        data: {
+          userId,
+          totalAmount: Math.round(totalAmount * 100) / 100,
+          status: "PENDING",
+          paymentStatus: "pending",
+          paymentId: `temp_${Date.now()}`, // Temporary ID until Cashfree confirms
+          customMessage: address.customMessage || "",
+          shippingAddress: { ...address, couponCode: couponCode || "NONE", discountAmount: discountAmount || 0 },
+          items: { create: itemsToOrder }
+        }
+      });
+    });
+
+    // 2. Call Cashfree using our Database Order ID
     const response = await axios.post(
       'https://sandbox.cashfree.com/pg/orders',
       {
-        order_id: orderId,
+        order_id: order.id, // Use Prisma Order ID
         order_amount: Math.round(totalAmount * 100) / 100,
         order_currency: "INR",
         customer_details: {
@@ -44,149 +74,52 @@ export class OrderService {
 
     return {
       payment_session_id: response.data.payment_session_id,
-      order_id: orderId
+      order_id: order.id
     };
   }
 
-static async finalizeOrder(userId: string, data: any) {
-  const { address, productId, cashfreeOrderId, couponCode, discountAmount } = data;
-
-  // 1. Check if order already exists (handles reloads)
-  const existingOrder = await prisma.order.findUnique({
-    where: { paymentId: cashfreeOrderId },
-    include: { items: true }
-  });
-
-  // ✅ FIX: Ensure cart is cleared even if order already exists
-  if (existingOrder) {
-    const userCart = await prisma.cart.findUnique({ where: { userId } });
-
-    if (userCart) {
-      await prisma.cartItem.deleteMany({
-        where: { cartId: userCart.id }
-      });
-    }
-
-    return existingOrder;
-  }
-
-  if (!address) throw new Error("Shipping address is required");
-
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-
-  return await prisma.$transaction(async (tx: any) => {
-
-    // Double-check for duplicate inside transaction
-    const duplicateCheck = await tx.order.findUnique({
-      where: { paymentId: cashfreeOrderId }
-    });
-
-    // ✅ FIX: Also handle duplicate inside transaction
-    if (duplicateCheck) {
-      const userCart = await tx.cart.findUnique({ where: { userId } });
-
-      if (userCart) {
-        await tx.cartItem.deleteMany({
-          where: { cartId: userCart.id }
-        });
-      }
-
-      return duplicateCheck;
-    }
-
-    let itemsToOrder = [];
-    let subtotal = 0;
-
-    if (productId) {
-      // --- SCENARIO: BUY NOW ---
-      const p = await tx.product.findUnique({ where: { id: productId } });
-      if (!p) throw new Error("Product not found");
-
-      itemsToOrder.push({
-        productId: p.id,
-        name: p.name,
-        price: p.price,
-        quantity: 1
-      });
-
-      subtotal = p.price;
-
-      // REMOVE ONLY THIS ITEM from the cart if it exists there
-      const userCart = await tx.cart.findUnique({ where: { userId } });
-      if (userCart) {
-        await tx.cartItem.deleteMany({
-          where: {
-            cartId: userCart.id,
-            productId: productId
-          }
-        });
-      }
-
-    } else {
-      // --- SCENARIO: CHECKOUT FROM CART ---
-      const cart = await tx.cart.findUnique({
-        where: { userId },
-        include: { items: { include: { product: true } } }
-      });
-
-      if (!cart || cart.items.length === 0) {
-        throw new Error("Cart is empty");
-      }
-
-      itemsToOrder = cart.items.map((i: any) => ({
-        productId: i.productId,
-        name: i.product.name,
-        price: i.product.price,
-        quantity: i.quantity
-      }));
-
-      subtotal = cart.items.reduce(
-        (acc: any, i: any) => acc + (i.product.price * i.quantity),
-        0
-      );
-
-      // CLEAR THE WHOLE CART
-      await tx.cartItem.deleteMany({
-        where: { cartId: cart.id }
-      });
-    }
-
-    // Calculations
-    const savings = subtotal * 0.10;
-    const gst = subtotal * 0.18;
-    const delivery = subtotal > 2000 ? 0 : 40;
-    const finalAmount =
-      subtotal - savings - (discountAmount || 0) + gst + delivery;
-
-    // Create the Order
-    const order = await tx.order.create({
-      data: {
-        userId,
-        totalAmount: Math.round(finalAmount * 100) / 100,
-        status: "PROCESSING",
-        paymentStatus: "paid",
-        paymentId: cashfreeOrderId,
-        customMessage: address.customMessage || "",
-        shippingAddress: {
-          ...address,
-          couponCode: couponCode || "NONE"
-        },
-        items: { create: itemsToOrder }
-      },
+  static async finalizeOrder(userId: string, cashfreeOrderId: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    
+    // 1. Find the existing pending order
+    const existingOrder = await prisma.order.findUnique({
+      where: { id: cashfreeOrderId },
       include: { items: true }
     });
 
-    // Send Email
-    if (user?.email) {
-      sendOrderConfirmation(user.email, user.name, order).catch(err =>
-        console.error("Mail Error:", err)
-      );
+    if (!existingOrder) throw new Error("Order record not found");
+
+    // 2. If already processed, just return it
+    if (existingOrder.paymentStatus === 'paid') {
+        return existingOrder;
     }
 
-    return order;
+    // 3. Update Order to PAID and clear cart
+    return await prisma.$transaction(async (tx: any) => {
+      const updatedOrder = await tx.order.update({
+        where: { id: cashfreeOrderId },
+        data: {
+          paymentStatus: "paid",
+          status: "PROCESSING",
+          paymentId: cashfreeOrderId // Sync final ID
+        },
+        include: { items: true }
+      });
 
-  }, { isolationLevel: 'Serializable' });
-}
+      // Clear cart items for this user
+      const cart = await tx.cart.findUnique({ where: { userId } });
+      if (cart) {
+        await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
+      }
+
+      // Send Email
+      if (user?.email) {
+        sendOrderConfirmation(user.email, user.name, updatedOrder).catch(err => console.error("Mail Error:", err));
+      }
+
+      return updatedOrder;
+    });
+  }
 
   static async getHistory(userId: string) {
     return prisma.order.findMany({

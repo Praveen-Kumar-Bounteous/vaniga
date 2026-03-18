@@ -50,16 +50,22 @@ export default function CheckoutPage() {
     }
 
     try {
+      // FIX: Added address, productId, couponCode, and discountAmount to the API call
       const { data } = await initiatePaymentAPI({
         totalAmount: total,
         userId: user.id,
         email: user.email,
         name: user.name,
-        phone: address.phone
+        phone: address.phone,
+        address: address, // <--- REQUIRED NOW
+        productId: productId || undefined,
+        couponCode: couponData.code || undefined,
+        discountAmount: couponData.discount
       });
 
       const cashfree = new (window as any).Cashfree({ mode: "sandbox" });
       
+      // We still keep this as a backup, but the Backend now has everything in the DB
       sessionStorage.setItem('temp_checkout_payload', JSON.stringify({
         address,
         productId,
@@ -68,7 +74,11 @@ export default function CheckoutPage() {
         discountAmount: couponData.discount
       }));
 
-      await cashfree.checkout({ paymentSessionId: data.payment_session_id, redirectTarget: "_self" });
+      await cashfree.checkout({ 
+        paymentSessionId: data.payment_session_id, 
+        redirectTarget: "_self" 
+      });
+
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Payment failed to start");
     }
@@ -136,7 +146,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Sidebar Summary (Calculations & Coupon Only) */}
+          {/* Sidebar Summary */}
           <div className="lg:col-span-1">
              <SummaryCard 
                 subtotal={subtotal} 
