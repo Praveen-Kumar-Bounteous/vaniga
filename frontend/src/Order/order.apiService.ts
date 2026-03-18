@@ -6,18 +6,14 @@ export const initiatePaymentAPI = (paymentData: {
   email: string; 
   phone: string; 
   name: string; 
-}) => apiClient.post('/orders/initiate-payment', paymentData);
-
-export interface ConfirmOrderPayload {
-  cashfreeOrderId: string;
-  address?: any;       
+  address: any;      // Added address
   productId?: string;
   couponCode?: string;
   discountAmount?: number;
-}
+}) => apiClient.post('/orders/initiate-payment', paymentData);
 
-export const confirmOrderAPI = (payload: ConfirmOrderPayload) => {
-  return apiClient.post('/orders/confirm', payload);
+export const confirmOrderAPI = (cashfreeOrderId: string) => {
+  return apiClient.post('/orders/confirm', { cashfreeOrderId });
 };
 
 export const fetchOrderHistoryAPI = () => 
