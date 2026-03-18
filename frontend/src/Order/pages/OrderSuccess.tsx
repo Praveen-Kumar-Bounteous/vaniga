@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { confirmOrderAPI, type ConfirmOrderPayload } from "../order.apiService"; // Import the interface
 import { Check, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function OrderSuccess() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function OrderSuccess() {
   const [loading, setLoading] = useState(true);
   const [order, setOrder] = useState<any>(null);
   const [error, setError] = useState(false);
+  const queryClient = useQueryClient();
 
   const hasCalledAPI = useRef(false);
   const cfOrderId = params.get("order_id");
@@ -51,6 +53,7 @@ export default function OrderSuccess() {
         
         if (response.data?.success) {
           setOrder(response.data.data);
+          queryClient.invalidateQueries({ queryKey: ['cart'] });
           sessionStorage.removeItem('temp_checkout_payload');
           setLoading(false);
         } else {
