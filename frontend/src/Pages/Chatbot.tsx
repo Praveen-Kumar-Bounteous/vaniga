@@ -42,7 +42,7 @@ export default function ChatBot() {
     setIsTyping(true);
 
     try {
-      const res = await apiClient.post('/users/bot/chat', { message: textToSend });
+      const res = await apiClient.post('users/bot/chat', { message: textToSend });
       setTimeout(() => {
         addMessage(res.data.reply, 'bot');
         setIsTyping(false);

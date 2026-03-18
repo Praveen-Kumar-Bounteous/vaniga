@@ -13,11 +13,11 @@ export default function CartItem({ item, onUpdate, onRemove }: any) {
         <p className="text-sm font-black mt-1">{formatINR(item.product.price)}</p>
       </div>
       <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-full border">
-        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => onUpdate(item.id, item.quantity - 1)}><Minus size={14}/></Button>
+        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" disabled={item.quantity === 1} onClick={() => onUpdate(item.id, item.quantity - 1)}><Minus size={14}/></Button>
         <span className="font-black italic text-sm w-4 text-center">{item.quantity}</span>
-        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => onUpdate(item.id, item.quantity + 1)}><Plus size={14}/></Button>
+        <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full cursor-pointer" onClick={() => onUpdate(item.id, item.quantity + 1)}><Plus size={14}/></Button>
       </div>
-      <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-50 rounded-full" onClick={() => onRemove(item.id)}><Trash2 size={18}/></Button>
+      <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-50 rounded-full cursor-pointer" onClick={() => onRemove(item.id)}><Trash2 size={18}/></Button>
     </div>
   );
 }

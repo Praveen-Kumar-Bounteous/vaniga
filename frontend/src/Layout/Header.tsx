@@ -67,7 +67,7 @@ const Header = () => {
     { name: 'Deals', path: '/products?category=Deals' },
   ];
 
-  const promoText = "Free Delivery on orders above ₹2000 | Use WELCOME20 for instant ₹200 OFF";
+  const promoText = "Free Delivery on orders above ₹2000 | Use FLAT200 for instant ₹200 OFF on All Orders";
 
   return (
     <>
@@ -159,7 +159,7 @@ const Header = () => {
           {/* Actions */}
           <div className="flex items-center gap-2">
             <Link to="/cart">
-              <Button variant="ghost" size="icon" className="relative hover:bg-primary/5 rounded-full w-10 h-10 transition-all">
+              <Button variant="ghost" size="icon" className="cursor-pointer relative hover:bg-primary/5 rounded-full w-10 h-10 transition-all">
                 <ShoppingCart className="w-5 h-5 text-slate-700" />
                 {cartCount > 0 && (
                   <span className="absolute top-0 right-0 bg-primary text-white text-[9px] rounded-full h-4 w-4 flex items-center justify-center font-black border-2 border-white shadow-lg animate-in zoom-in">
@@ -176,7 +176,7 @@ const Header = () => {
                     <div className="w-6 h-6 bg-slate-100 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
                       <User size={14} />
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 hidden lg:inline-block">Account</span>
+                    <span className="cursor-pointer text-[10px] font-black uppercase tracking-widest text-slate-600 hidden lg:inline-block">Account</span>
                     <ChevronDown size={12} className="text-slate-400" />
                   </Button>
                 </DropdownMenuTrigger>

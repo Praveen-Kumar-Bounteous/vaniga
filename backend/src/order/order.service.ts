@@ -12,7 +12,7 @@ export type CartItem = {
 }
 
 export class OrderService {
-  
+
   static async initiatePayment(userId: string, totalAmount: number, email: string, phone: string, name: string) {
     const orderId = `order_${Date.now()}`;
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -41,10 +41,10 @@ export class OrderService {
         }
       }
     );
-    
-    return { 
-      payment_session_id: response.data.payment_session_id, 
-      order_id: orderId 
+
+    return {
+      payment_session_id: response.data.payment_session_id,
+      order_id: orderId
     };
   }
 
@@ -56,12 +56,24 @@ export class OrderService {
       where: { paymentId: cashfreeOrderId },
       include: { items: true }
     });
-    
+
     // If order is found, return it immediately and bypass cart/address logic
     if (existingOrder) return existingOrder;
 
     // 2. Validate data for new order creation
-    if (!address) throw new Error("Order details missing. Please check your history.");
+    if (!address) {
+      // If no address, assume this is a confirm call after payment
+      const existingOrder = await prisma.order.findUnique({
+        where: { paymentId: cashfreeOrderId },
+        include: { items: true }
+      });
+
+      if (!existingOrder) {
+        throw new Error("Order not found. Please contact support.");
+      }
+
+      return existingOrder;
+    }
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
@@ -81,19 +93,19 @@ export class OrderService {
         itemsToOrder.push({ productId: p.id, name: p.name, price: p.price, quantity: 1 });
         subtotal = p.price;
       } else {
-        const cart = await tx.cart.findUnique({ 
-          where: { userId }, 
-          include: { items: { include: { product: true } } } 
+        const cart = await tx.cart.findUnique({
+          where: { userId },
+          include: { items: { include: { product: true } } }
         });
         if (!cart || cart.items.length === 0) throw new Error("Cart empty");
-  
+
         itemsToOrder = cart.items.map((i: CartItem) => ({
           productId: i.productId,
           name: i.product.name,
           price: i.product.price,
           quantity: i.quantity
         }));
-        subtotal = cart.items.reduce((acc: any, i:any) => acc + (i.product.price * i.quantity), 0);
+        subtotal = cart.items.reduce((acc: any, i: any) => acc + (i.product.price * i.quantity), 0);
         await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
       }
 

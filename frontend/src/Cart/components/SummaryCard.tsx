@@ -99,9 +99,9 @@ export default function SummaryCard({
                 onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
             />
             {activeCoupon?.code ? (
-                <Button variant="destructive" className="rounded-xl h-11 px-4 font-black italic uppercase text-xs" onClick={handleRemoveCoupon}>Remove</Button>
+                <Button variant="destructive" className="rounded-xl h-11 px-4 font-black italic uppercase text-xs cursor-pointer" onClick={handleRemoveCoupon}>Remove</Button>
             ) : (
-                <Button variant="outline" className="rounded-xl h-11 px-4 font-black italic uppercase text-xs" onClick={handleApplyCoupon} disabled={isValidating || !couponInput}>
+                <Button variant="outline" className="rounded-xl h-11 px-4 font-black italic uppercase text-xs cursor-pointer" onClick={handleApplyCoupon} disabled={isValidating || !couponInput}>
                 {isValidating ? <Loader2 className="animate-spin" size={14} /> : "Apply"}
                 </Button>
             )}
@@ -117,7 +117,7 @@ export default function SummaryCard({
       {!isCheckoutPage ? (
         <Button 
           onClick={() => onCheckout({ total, appliedCoupon: activeCoupon })} 
-          className="w-full bg-primary hover:bg-purple-700 h-16 rounded-2xl font-black italic uppercase text-lg shadow-xl shadow-primary/20"
+          className="w-full bg-primary hover:bg-purple-700 h-16 rounded-2xl font-black italic uppercase text-lg shadow-xl shadow-primary/20 cursor-pointer"
         >
           Checkout <ArrowRight className="ml-2 w-5 h-5" />
         </Button>

@@ -1,24 +1,28 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const slides = [
   {
     title: "Elevate Your Style",
     desc: "Discover the new Summer Collection with up to 40% off.",
     img: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2070",
-    cta: "Shop Fashion"
+    cta: "Shop Fashion",
+    link: "/products?category=Fashion+Lifestyle"
   },
   {
     title: "Next-Gen Electronics",
     desc: "Premium gadgets for a premium lifestyle. Free shipping included.",
     img: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=2070",
-    cta: "Explore Tech"
+    cta: "Shop Now",
+    link: "/products?category=Mobiles+%26+Tablets"
   }
 ];
 
 export default function Carousel() {
   const [current, setCurrent] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrent(prev => (prev + 1) % slides.length), 5000);
@@ -42,7 +46,9 @@ export default function Carousel() {
             <p className="text-lg md:text-xl font-light max-w-lg opacity-90">
               {slide.desc}
             </p>
-            <Button className="bg-primary hover:bg-white hover:text-primary text-white font-bold px-8 h-12 transition-all rounded-none uppercase tracking-widest">
+            <Button
+            onClick={() => navigate(slide.link)}
+            className="bg-primary hover:bg-white hover:text-primary text-white font-bold px-8 h-12 transition-all rounded-none uppercase tracking-widest">
               {slide.cta}
             </Button>
           </div>
