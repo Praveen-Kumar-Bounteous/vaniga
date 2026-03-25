@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Quote, Loader2 } from "lucide-react";
 import logo from "../../../public/logo.png";
+import LogRocket from "logrocket";
 
 export default function Login() {
   const { register, handleSubmit, formState: { isSubmitting } } = useForm();
@@ -16,7 +17,15 @@ export default function Login() {
   const onSubmit = async (data: any) => {
     try {
       const response = await loginAPI(data);
-      setUser(response.data.data);
+
+      const user = response.data.data;
+      setUser(user);
+
+      LogRocket.identify(user.id, {
+        name: user.name,
+        email: user.email,
+      });
+
       toast.success(`Welcome back, ${response.data.data.name}!`);
       navigate("/");
     } catch (error: any) {
