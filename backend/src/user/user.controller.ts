@@ -36,7 +36,6 @@ export const handleBotMessage = async (req: Request, res: Response) => {
     const { message } = req.body;
     const { userId, name } = (req as any).user;
     
-    // Delegate all business logic to the service
     const reply = await UserService.processBotMessage(userId, name, message);
     
     res.status(200).json({ success: true, reply });

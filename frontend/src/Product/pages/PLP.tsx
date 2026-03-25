@@ -53,7 +53,7 @@ export default function PLP() {
           <BreadcrumbList className="flex-wrap">
             <BreadcrumbItem><BreadcrumbLink asChild><Link to="/">Home</Link></BreadcrumbLink></BreadcrumbItem>
             <BreadcrumbSeparator />
-            <BreadcrumbItem className="font-bold text-primary italic uppercase tracking-tighter truncate max-w-[150px]">
+            <BreadcrumbItem className="font-bold text-primary uppercase tracking-tighter truncate max-w-[150px]">
               {category === "all" ? "All Products" : category}
             </BreadcrumbItem>
           </BreadcrumbList>

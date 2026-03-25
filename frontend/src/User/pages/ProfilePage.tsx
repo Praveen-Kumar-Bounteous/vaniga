@@ -53,11 +53,6 @@ export default function ProfilePage() {
       <div className="container mx-auto px-4 py-8 lg:pb-8 pb-24">
         
         <Tabs defaultValue="personal" className="w-full">
-          {/* 
-              WRAPPER DIV: 
-              This is the "Fix" - we put the flex logic on a standard div 
-              instead of the Tabs component itself.
-          */}
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             
             {/* --- LEFT SIDEBAR (Desktop) / BOTTOM NAV (Mobile) --- */}

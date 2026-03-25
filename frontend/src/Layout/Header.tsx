@@ -53,7 +53,7 @@ const Header = () => {
       await logoutAPI();
       logout();
       toast.success("Logged out successfully");
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       toast.error("Logout failed");
     } finally {

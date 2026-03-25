@@ -118,7 +118,7 @@ static async updateDetails(userId: string, data: any) {
 
     // 4. Intent: Greetings
     if (lowerMsg.includes("hi") || lowerMsg.includes("hello") || lowerMsg.includes("hey") || lowerMsg.includes("help")) {
-      return `Greetings, ${userName}! 👋 I am your Vaniga Virtual Concierge. \n\nI can help you track a specific package, provide your billing history, or update you on your latest order. \n\nHow may I assist you today?`;
+      return `Greetings, ${userName}! I am your Vaniga Virtual Concierge. \n\nI can help you track a specific package, provide your billing history, or update you on your latest order. \n\nHow may I assist you today?`;
     }
 
     // 5. Fallback

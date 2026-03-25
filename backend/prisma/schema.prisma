@@ -58,7 +58,7 @@ model Address {
 
 model Product {
   id          String   @id @default(uuid())
-  name        String
+  name        String  
   description String   @db.Text
   price       Float
   images      String[] // Postgres supports string arrays
