@@ -25,7 +25,7 @@ app.use(cors({
   credentials: true 
 }));
 
-app.get('/health', (req, res) => res.status(200).send('OK'));
+app.get('/health', (_req, res) => res.status(200).send('OK'));
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);

@@ -97,10 +97,10 @@ export default function Login() {
       {/* Right Side: Professional Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-primary relative items-center justify-center p-16">
         {/* Subtle Background Pattern (Minimalist Dots) */}
-        <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(#fff_1.5px,transparent_1.5px)] [background-size:30px_30px]"></div>
+        <div className="absolute inset-0 opacity-[0.15] bg-[radial-gradient(#fff_1.5px,transparent_1.5px)] bg-size-[30px_30px]"></div>
         
         {/* Static decorative circle for depth */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white opacity-[0.03] rounded-full"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-white opacity-[0.03] rounded-full"></div>
 
         <div className="relative z-10 max-w-lg w-full flex flex-col items-center">
             {/* Logo in Static Premium Container */}
@@ -125,7 +125,7 @@ export default function Login() {
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="h-[1px] w-12 bg-white/30"></div>
+              <div className="h-px w-12 bg-white/30"></div>
               <p className="text-purple-200 text-sm font-semibold tracking-widest uppercase">
                 Aristotle Onassis
               </p>

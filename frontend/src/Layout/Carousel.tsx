@@ -16,7 +16,7 @@ const slides = [
     desc: "Premium gadgets for a premium lifestyle. Free shipping included.",
     img: "https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=2070",
     cta: "Shop Now",
-    link: "/products?category=Mobiles+%26+Tablets"
+    link: "/products?category=Electronics"
   }
 ];
 
