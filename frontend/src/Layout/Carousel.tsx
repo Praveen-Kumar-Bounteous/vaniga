@@ -22,12 +22,41 @@ const slides = [
 
 export default function Carousel() {
   const [current, setCurrent] = useState(0);
+   const [hasConsent, setHasConsent] = useState(false);
   const navigate = useNavigate();
 
+
+    useEffect(() => {
+    const checkConsent = () => {
+      const groups = window.OnetrustActiveGroups || '';
+      setHasConsent(groups.includes('C0002')); // Performance consent
+    };
+
+    // Initial check
+    checkConsent();
+
+    // Listen for consent changes
+    window.addEventListener("OneTrustGroupsUpdated", checkConsent);
+
+    return () => {
+      window.removeEventListener("OneTrustGroupsUpdated", checkConsent);
+    };
+  }, [hasConsent]);
+
   useEffect(() => {
+    if (!hasConsent) return;
     const timer = setInterval(() => setCurrent(prev => (prev + 1) % slides.length), 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [hasConsent]);
+
+   // If no consent → don't render carousel
+  if (!hasConsent) {
+    return (
+      <div className="h-[400px] flex items-center justify-center">
+        <p>Please accept performance cookies to view carousel</p>
+      </div>
+    );
+  }
 
   return (
     <section className="relative h-[400px] md:h-[600px] w-full overflow-hidden font-sans">

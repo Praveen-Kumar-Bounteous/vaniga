@@ -4,6 +4,96 @@
 @import "@fontsource-variable/geist";
 
 
+/* Hides the floating cookie icon completely */
+#ot-sdk-btn-floating {
+  display: none !important;
+}
+
+/* Also hide the floating button wrapper */
+.ot-floating-button {
+  display: none !important;
+}
+
+/* ── Banner container ── */
+#onetrust-banner-sdk {
+  background: #FFFFFF !important;
+  border-top: 4px solid var(--your-brand)!important;
+  font-family: 'Your Client Font', sans-serif !important;
+  padding: 24px 32px !important;
+  border-radius: 0 !important;
+}
+
+/* ── Logo area ── */
+#onetrust-banner-sdk .ot-sdk-container img {
+  height: 36px !important;
+  width: auto !important;
+  margin-bottom: 12px !important;
+}
+
+/* ── Title ── */
+#onetrust-policy-title {
+  color: #1A1A1A !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  margin-bottom: 8px !important;
+}
+
+/* ── Body text ── */
+#onetrust-policy-text {
+  color: #555 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+/* ── Accept All button ── */
+#onetrust-accept-btn-handler {
+  background-color: var(--your-primary) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  cursor: pointer !important;
+}
+
+/* ── Reject All button ── */
+#onetrust-reject-all-handler {
+  background: transparent !important;
+  color: var(--your-primary) !important;
+  border: 2px solid var(--your-primary) !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  cursor: pointer !important;
+}
+
+/* ── Manage Preferences link ── */
+#onetrust-pc-btn-handler {
+  color: var(--your-primary) !important;
+  text-decoration: underline !important;
+  background: transparent !important;
+  border: none !important;
+  font-size: 14px !important;
+}
+
+/* ── Preference Center header ── */
+#onetrust-pc-sdk .ot-pc-header {
+  background: var(--your-primary) !important;
+}
+
+/* ── Toggle switches — active state ── */
+#onetrust-pc-sdk .ot-tgl input:checked + .ot-switch .ot-switch-nob {
+  background: var(--your-primary) !important;
+  border-color: var(--your-primary) !important;
+}
+
+/* ── Save button in preference center ── */
+#accept-recommended-btn-handler,
+.save-preference-btn-handler {
+  background: var(--your-primary) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+}
 .lato-thin {
   font-family: "Lato", sans-serif;
   font-weight: 100;
@@ -182,6 +272,8 @@
 @layer base {
   :root {
     --font-sans: 'Lato', sans-serif;
+    --your-primary: #9f00e4;
+    --your-brand:  #004499
   }
 
   * {
