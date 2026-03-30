@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
-import { 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Linkedin, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Mail,
+  Phone,
+  MapPin,
   CreditCard,
-  LockKeyhole, 
+  LockKeyhole,
 } from "lucide-react";
+import { CookieSettingsLink } from "@/Cookie/CookieSettingsLink";
 
 const Footer = () => {
   return (
@@ -56,7 +57,7 @@ const Footer = () => {
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3 text-slate-500">
                 <MapPin className="w-5 h-5 text-primary shrink-0" />
-                <span>Gloabal Infocity, Tech Park, <br/> Chennai, India</span>
+                <span>Gloabal Infocity, Tech Park, <br /> Chennai, India</span>
               </li>
               <li className="flex items-center gap-3 text-slate-500">
                 <Phone className="w-5 h-5 text-primary shrink-0" />
@@ -76,7 +77,8 @@ const Footer = () => {
           <p className="text-slate-500 text-sm">
             © {new Date().getFullYear()} <span className="text-primary font-bold">VANIGA</span>. Developed by Intern Team.
           </p>
-          
+          <CookieSettingsLink />
+
           <div className="flex items-center gap-4">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">Secure Payments</span>
             <div className="flex gap-2">
